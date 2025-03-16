@@ -1,0 +1,45 @@
+%% The code is automatically detect the weight center of pixels, and output the weight center point.  
+
+clear all;close all;clc;
+
+path='C:/MatCode_4_Ullapool/test';
+file=fullfile(path,'*.tif');
+TIF_image=dir(file);
+% 
+for k_Im=0:numel(TIF_image)-1
+	filename=fullfile(path,TIF_image(k_Im+1).name);
+	imdata = imread(filename);
+	s = size(imdata);
+	im_data=imdata(2:s(1)-1,2:s(2)-1);
+	im_data(im_data == 0) =1;
+	im_data(im_data == 255) =0;
+	[X,Y,p_counts,p_Area]=image_erosion(im_data);
+	s = size(im_data)
+	im_result =zeros(s(1),s(2));
+	for k = 1:p_counts
+		im_result(Y(k),X(k)) =1;
+	end
+	figure;
+	imshow(im_result)
+	hold on;plot(X,Y,'r.');hold off;
+	
+	s = size(im_result)
+	X_resolution =s(1);Y_resolution =s(2);
+	X_blocks_no = 1;Y_blocks_no = 1; %x and y number 
+	block_Xstep = X_resolution/X_blocks_no;
+	block_Ystep = Y_resolution/Y_blocks_no;
+
+	counts_blocks = zeros(X_blocks_no,Y_blocks_no);
+	for x_blocks = 0:X_blocks_no-1
+		for y_blocks =0:Y_blocks_no-1
+			data_block_cache = im_result(x_blocks*block_Xstep+1:(x_blocks+1)*block_Xstep,y_blocks*block_Ystep+1:(y_blocks+1)*block_Ystep);
+			counts_blocks(x_blocks+1,y_blocks+1) = sum(sum(data_block_cache));
+		end
+	end
+	
+	image_no = num2str(k_Im+1)
+	imge_name = strcat('Image_001',image_no,'.mat');
+	save(char(imge_name),'counts_blocks')
+end
+
+
