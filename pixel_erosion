@@ -1,0 +1,13 @@
+% This function is regarding pixel erosion, and is enssential for the work of other code. 
+
+function [X,Y,p_counts,p_Area]=image_erosion(im_data)
+	image_gray = bwlabel(im_data);
+	s = regionprops(image_gray, 'all');
+	p_cords= cat(1,s.Centroid); 
+	p_Area = [s.Area];
+    if ~isempty(p_cords)
+        X= int32(p_cords(:,1));Y=int32(p_cords(:,2));p_counts = int32(length(X));
+    else
+        X=0;Y=0;p_counts=0;p_Area=0;
+    end
+end	
