@@ -1,0 +1,39 @@
+%% Visualization by countouring
+
+clear all;close all;clc;
+
+path='D:/1. Research/2. Stylolite /Code + fractal/for plot tets/';
+
+
+file=fullfile(path,'*.tif');
+TIF_image=dir(file);
+% 
+pa_kfsp_test_counts =zeros(25,15); %put the number of images here in the first blank
+pa_kfsp_test_area =zeros(25,15);   %put the number of images here in the first blank
+pa_kfsp_test_ratio = zeros(25,15); %put the number of images here in the first blank
+for k_Im=0:numel(TIF_image)-1
+	clear X Y p_counts p_Area
+	filename=fullfile(path,TIF_image(k_Im+1).name)
+	imdata = imread(filename); s = size(imdata);
+	imdata(imdata == 0) =1;
+	imdata(imdata == 255 ) =0;
+	im_data = imdata(1:s(1)-1,1:s(2)-1);
+	s = size(im_data);
+	[X,Y,p_counts,p_Area]=image_erosion(im_data);
+	pa_kfsp_test_counts(k_Im+1) = length(X);
+	pa_kfsp_test_area(k_Im+1) = sum(sum(p_Area));
+	total_area =s(1)*s(2);
+	pa_kfsp_test_ratio(k_Im+1) = pa_kfsp_test_area(k_Im+1)/total_area;
+end
+
+pa_kfsp_test_counts = reshape(pa_kfsp_test_counts,[25,15])'; % image number in X and Y coordinates
+pa_kfsp_test_area = reshape(pa_kfsp_test_area,[25,15])';     % image number in X and Y coordinates
+pa_kfsp_test_ratio = reshape(pa_kfsp_test_ratio,[25,15])';   % image number in X and Y coordinates
+
+
+imge_name = strcat('om_Counts.mat');% Save the file with the name wanted
+save(char(imge_name),'pa_kfsp_test_counts');
+imge_name = strcat('om_area.mat'); % Save the file with the name wanted
+save(char(imge_name),'pa_kfsp_test_area');
+imge_name = strcat('om_ratio.mat');% Save the file with the name wanted
+save(char(imge_name),'pa_kfsp_test_ratio');
